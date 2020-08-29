@@ -7,6 +7,7 @@ import Transaction from '../models/Transaction';
 import TransactionRepository from '../repositories/TransactionsRepository';
 
 import Category from '../models/Category';
+import CreateTransactionService from './CreateTransactionService';
 
 interface TransactionCSV {
   title: string;
@@ -38,8 +39,9 @@ class ImportTransactionsService {
       parseCSV.on('end', resolve);
     });
 
-    /* Add to the database */
     const transactions: Transaction[] = [];
+
+    /* Add to the database */
     const transactionsRepository = getCustomRepository(TransactionRepository);
     const categoryRepository = getRepository(Category);
 
@@ -63,7 +65,7 @@ class ImportTransactionsService {
         category: categoryOnTable,
       });
 
-      transaction = await transactionsRepository.save(transaction);
+      await transactionsRepository.save(transaction);
       transactions.push(transaction);
     });
 
