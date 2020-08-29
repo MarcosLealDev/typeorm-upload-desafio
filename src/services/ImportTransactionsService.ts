@@ -29,7 +29,6 @@ class ImportTransactionsService {
     const parseCSV = readCSVStream.pipe(parseStream);
 
     const transactionsList: TransactionCSV[] = [];
-    const transactions: Transaction[] = [];
 
     parseCSV.on('data', ([title, type, value, category]) => {
       transactionsList.push({ title, value, type, category });
@@ -40,6 +39,7 @@ class ImportTransactionsService {
     });
 
     /* Add to the database */
+    const transactions: Transaction[] = [];
     const transactionsRepository = getCustomRepository(TransactionRepository);
     const categoryRepository = getRepository(Category);
 
@@ -63,11 +63,11 @@ class ImportTransactionsService {
         category: categoryOnTable,
       });
 
-      await transactionsRepository.save(transaction);
+      transaction = await transactionsRepository.save(transaction);
       transactions.push(transaction);
     });
 
-    /* Delete */
+    /* Delete tmp file */
     await fs.promises.unlink(filename);
 
     return transactions;
