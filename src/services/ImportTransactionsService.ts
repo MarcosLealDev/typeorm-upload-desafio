@@ -1,12 +1,12 @@
 import csvParse from 'csv-parse';
 import fs from 'fs';
 
-import { getCustomRepository, getRepository } from 'typeorm';
+// import { getCustomRepository, getRepository } from 'typeorm';
 import Transaction from '../models/Transaction';
 
-import TransactionRepository from '../repositories/TransactionsRepository';
+// import TransactionRepository from '../repositories/TransactionsRepository';
 
-import Category from '../models/Category';
+// import Category from '../models/Category';
 import CreateTransactionService from './CreateTransactionService';
 
 interface TransactionCSV {
@@ -42,32 +42,45 @@ class ImportTransactionsService {
     const transactions: Transaction[] = [];
 
     /* Add to the database */
-    const transactionsRepository = getCustomRepository(TransactionRepository);
-    const categoryRepository = getRepository(Category);
-
-    transactionsList.forEach(async ({ title, type, value, category }) => {
-      let categoryOnTable = await categoryRepository.findOne({
-        where: { title: category },
+    const createTransaction = new CreateTransactionService();
+    // eslint-disable-next-line no-restricted-syntax
+    for (const oneTransactionList of transactionsList) {
+      // eslint-disable-next-line no-await-in-loop
+      const transaction = await createTransaction.execute({
+        ...oneTransactionList,
       });
 
-      if (!categoryOnTable) {
-        categoryOnTable = categoryRepository.create({
-          title: category,
-        });
-
-        await categoryRepository.save(categoryOnTable);
-      }
-
-      const transaction = transactionsRepository.create({
-        title,
-        value,
-        type,
-        category: categoryOnTable,
-      });
-
-      await transactionsRepository.save(transaction);
       transactions.push(transaction);
-    });
+    }
+
+    /* Código abaixo não funciona 'sempre' */
+    /* Add to the database */
+    // const transactionsRepository = getCustomRepository(TransactionRepository);
+    // const categoryRepository = getRepository(Category);
+
+    // transactionsList.forEach(async ({ title, type, value, category }) => {
+    //   let categoryOnTable = await categoryRepository.findOne({
+    //     where: { title: category },
+    //   });
+
+    //   if (!categoryOnTable) {
+    //     categoryOnTable = categoryRepository.create({
+    //       title: category,
+    //     });
+
+    //     await categoryRepository.save(categoryOnTable);
+    //   }
+
+    //   const transaction = transactionsRepository.create({
+    //     title,
+    //     value,
+    //     type,
+    //     category: categoryOnTable,
+    //   });
+
+    //   await transactionsRepository.save(transaction);
+    //   transactions.push(transaction);
+    // });
 
     /* Delete tmp file */
     await fs.promises.unlink(filename);
