@@ -53,7 +53,7 @@ class ImportTransactionsService {
       transactions.push(transaction);
     }
 
-    /* Código abaixo não funciona 'sempre' */
+    /* Código abaixo não funciona 'sempre' - ver ForEach Async Await */
     /* Add to the database */
     // const transactionsRepository = getCustomRepository(TransactionRepository);
     // const categoryRepository = getRepository(Category);
