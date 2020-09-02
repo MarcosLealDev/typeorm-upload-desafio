@@ -82,6 +82,8 @@ class ImportTransactionsService {
     //   transactions.push(transaction);
     // });
 
+    /* Create Database - adding Categories first */
+
     /* Delete tmp file */
     await fs.promises.unlink(filename);
 
